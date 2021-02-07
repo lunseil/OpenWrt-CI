@@ -46,6 +46,25 @@ jobs:
           sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler antlr3 gperf swig libtinfo5
           sudo -E apt-get -y autoremove --purge
           sudo -E apt-get clean
+          
+      - name: 同步最新的源码
+        run: |
+          git remote add openwrt https://github.com/coolsnowwolf/lede.git
+          git pull openwrt master
+          git remote -v
+          
+      - name: argon主题
+        run: |
+          cd package/lean
+          rm -rf luci-theme-argon
+          git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git
+    
+      - name: 关机键
+        run: |
+          cd package
+          mkdir openwrt-packages
+          cd openwrt-packages
+          git clone https://github.com/esirplayground/luci-app-poweroff.git   
 
           # sudo mkdir -p -m 777 /mnt/openwrt/bin /mnt/openwrt/build_dir/host /mnt/openwrt/build_dir/hostpkg /mnt/openwrt/dl /mnt/openwrt/feeds /mnt/openwrt/staging_dir
           # ln -s /mnt/openwrt/bin ./bin
@@ -73,9 +92,104 @@ jobs:
           # 例如:
 
           cat >> .config <<EOF
+          CONFIG_TARGET_x86=y
+          CONFIG_TARGET_x86_64=y
+          CONFIG_TARGET_x86_64_DEVICE_generic=y
+          CONFIG_LIBCURL_COOKIES=y
+          CONFIG_LIBCURL_FILE=y
+          CONFIG_LIBCURL_FTP=y
+          CONFIG_LIBCURL_HTTP=y
+          CONFIG_LIBCURL_MBEDTLS=y
+          CONFIG_LIBCURL_NO_SMB="!"
+          CONFIG_LIBCURL_PROXY=y
+          # CONFIG_PACKAGE_adbyby is not set
+          # CONFIG_PACKAGE_antfs-mount is not set
+          # CONFIG_PACKAGE_automount is not set
+          # CONFIG_PACKAGE_autosamba is not set
+          CONFIG_PACKAGE_boost=y
+          CONFIG_PACKAGE_boost-program_options=y
+          CONFIG_PACKAGE_boost-system=y
+          CONFIG_PACKAGE_coreutils-nohup=y
+          CONFIG_PACKAGE_curl=y
+          # CONFIG_PACKAGE_etherwake is not set
+          CONFIG_PACKAGE_haproxy=y
+          CONFIG_PACKAGE_ipt2socks=y
+          # CONFIG_PACKAGE_iptables-mod-ipsec is not set
+          # CONFIG_PACKAGE_kmod-crypto-cbc is not set
+          # CONFIG_PACKAGE_kmod-crypto-crc32c is not set
+          # CONFIG_PACKAGE_kmod-crypto-deflate is not set
+          # CONFIG_PACKAGE_kmod-crypto-des is not set
+          # CONFIG_PACKAGE_kmod-crypto-echainiv is not set
+          # CONFIG_PACKAGE_kmod-crypto-hmac is not set
+          # CONFIG_PACKAGE_kmod-crypto-md5 is not set
+          # CONFIG_PACKAGE_kmod-fs-antfs is not set
+          # CONFIG_PACKAGE_kmod-fs-exfat is not set
+          # CONFIG_PACKAGE_kmod-fs-ext4 is not set
+          # CONFIG_PACKAGE_kmod-ipsec is not set
+          # CONFIG_PACKAGE_kmod-ipt-ipsec is not set
+          # CONFIG_PACKAGE_kmod-iptunnel6 is not set
+          # CONFIG_PACKAGE_kmod-lib-crc16 is not set
+          # CONFIG_PACKAGE_kmod-scsi-core is not set
+          # CONFIG_PACKAGE_kmod-tun is not set
+          # CONFIG_PACKAGE_kmod-usb-storage is not set
+          # CONFIG_PACKAGE_kmod-usb-storage-extras is not set
+          # CONFIG_PACKAGE_kmod-usb-storage-uas is not set
+          CONFIG_PACKAGE_libcap=y
+          CONFIG_PACKAGE_libcurl=y
+          # CONFIG_PACKAGE_libgmp is not set
+          CONFIG_PACKAGE_libltdl=y
+          CONFIG_PACKAGE_liblua5.3=y
+          # CONFIG_PACKAGE_libminiupnpc is not set
+          # CONFIG_PACKAGE_libnatpmp is not set
+          CONFIG_PACKAGE_libwebsockets-full=y
+          # CONFIG_PACKAGE_luci-app-accesscontrol is not set
+          # CONFIG_PACKAGE_luci-app-adbyby-plus is not set
+          # CONFIG_PACKAGE_luci-app-ddns is not set
+          # CONFIG_PACKAGE_luci-app-ipsec-vpnd is not set
+          # CONFIG_PACKAGE_luci-app-jd-dailybonus is not set
+          CONFIG_PACKAGE_luci-app-netdata=y
+          #CONFIG_PACKAGE_luci-app-passwall=not set
+          CONFIG_PACKAGE_luci-app-poweroff=y
+          # CONFIG_PACKAGE_luci-app-rclone_INCLUDE_fuse-utils is not set
+          # CONFIG_PACKAGE_luci-app-rclone_INCLUDE_rclone-ng is not set
+          # CONFIG_PACKAGE_luci-app-rclone_INCLUDE_rclone-webui is not set
+          # CONFIG_PACKAGE_luci-app-samba is not set
+          CONFIG_PACKAGE_luci-app-ttyd=y
+          # CONFIG_PACKAGE_luci-app-upnp is not set
+          # CONFIG_PACKAGE_luci-app-uugamebooster is not set
+          # CONFIG_PACKAGE_luci-app-vsftpd is not set
+          # CONFIG_PACKAGE_luci-app-webadmin is not set
+          # CONFIG_PACKAGE_luci-app-wol is not set
+          # CONFIG_PACKAGE_luci-app-xlnetacc is not set
+          # CONFIG_PACKAGE_luci-app-zerotier is not set
+          CONFIG_PACKAGE_luci-i18n-netdata-zh-cn=y
+          CONFIG_PACKAGE_luci-i18n-poweroff-zh-cn=y
+          CONFIG_PACKAGE_luci-i18n-ttyd-zh-cn=y
+          CONFIG_PACKAGE_luci-theme-argon=y
+          CONFIG_PACKAGE_luci-theme-netgear=y
+          # CONFIG_PACKAGE_miniupnpd is not set
+          CONFIG_PACKAGE_netdata=y
+          # CONFIG_PACKAGE_samba36-server is not set
+          CONFIG_PACKAGE_shadowsocks-libev-ss-server=y
+          # CONFIG_PACKAGE_strongswan is not set
+          CONFIG_PACKAGE_trojan-go=y
+          CONFIG_PACKAGE_trojan-plus=y
+          CONFIG_PACKAGE_ttyd=y
+          CONFIG_PACKAGE_unzip=y
+          # CONFIG_PACKAGE_uugamebooster is not set
+          CONFIG_PACKAGE_v2ray-plugin=y
+          # CONFIG_PACKAGE_vsftpd-alt is not set
+          # CONFIG_PACKAGE_wol is not set
+          # CONFIG_PACKAGE_wsdd2 is not set
+          # CONFIG_PACKAGE_zerotier is not set
           CONFIG_TARGET_IMAGES_GZIP=y
-          CONFIG_KERNEL_BUILD_USER="OpenWrt-CI"
-          CONFIG_KERNEL_BUILD_DOMAIN="Azure"
+          CONFIG_TARGET_KERNEL_PARTSIZE=256
+          CONFIG_TARGET_ROOTFS_PARTSIZE=512
+          CONFIG_TROJAN_GO_COMPRESS_UPX=y
+          CONFIG_boost-compile-visibility-hidden=y
+          CONFIG_boost-runtime-shared=y
+          CONFIG_boost-static-and-shared-libs=y
+          CONFIG_boost-variant-release=y
           EOF
 
           #
