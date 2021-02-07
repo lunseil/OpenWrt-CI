@@ -35,7 +35,7 @@ jobs:
         with:
           ref: master
 
-      - name: Space cleanup
+      - name: 配置编译环境
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
@@ -47,19 +47,13 @@ jobs:
           sudo -E apt-get -y autoremove --purge
           sudo -E apt-get clean
           
-      - name: 同步最新的源码
-        run: |
-          git remote add openwrt https://github.com/coolsnowwolf/lede.git
-          git pull openwrt master
-          git remote -v
-          
-      - name: argon主题
+      - name: argon主题源
         run: |
           cd package/lean
           rm -rf luci-theme-argon
           git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git
     
-      - name: 关机键
+      - name: 关机键源
         run: |
           cd package
           mkdir openwrt-packages
@@ -77,12 +71,12 @@ jobs:
 
           df -h
 
-      - name: Update feeds
+      - name: 升级 feeds
         run: |
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
-      - name: Generate configuration file
+      - name: 生成配置文件
         run: |
           rm -f ./.config*
           touch ./.config
@@ -199,13 +193,13 @@ jobs:
           sed -i 's/^[ \t]*//g' ./.config
           make defconfig
 
-      - name: Make download
+      - name: 下载DL库
         run: |
           make download -j8 || make download -j1 V=s
           rm -rf $(find ./dl/ -size -1024c)
           df -h
 
-      - name: Compile firmware
+      - name: 编译固件
         run: |
           make -j$(nproc) || make -j1 V=s
           echo "======================="
@@ -216,7 +210,7 @@ jobs:
           du -h ./ --max-depth=1
           du -h /mnt/openwrt/ --max-depth=1 || true
 
-      - name: Prepare artifact
+      - name: 准备工件
         run: |
           mkdir -p ./artifact/firmware
           mkdir -p ./artifact/package
@@ -244,7 +238,7 @@ jobs:
           name: OpenWrt_firmware
           path: ./bin/targets/
 
-      - name: Upload release asset
+      - name: 上传发布固件
         if: github.event == 'release'
         uses: svenstaro/upload-release-action@v2
         with:
